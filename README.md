@@ -1,20 +1,21 @@
 # Install 
 ## Install VisualStudio BuildTool
-download buildtool.exe  
-install with ✓ C++ Environment  
+* Download buildtool.exe and install with ✓ C++ Environment  
 https://visualstudio.microsoft.com/ja/downloads/#build-tools-for-visual-studio-2022
 
-Add PATH for compiler (cl.exe)  
+* Add PATH for compiler (cl.exe)  
 C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\x.x.x\bin\Hostx64\x64
 
-Add LIB, INCLUDE, LIBPATH  
+* Add LIB, INCLUDE, LIBPATH  
 open x64 native tools command prompt VS 2022  
 run below command and paste  
-echo %INCLUDE%  
-echo %LIB%  
-echo %LIBPATH%  
+    ```
+    echo %INCLUDE%  
+    echo %LIB%  
+    echo %LIBPATH%  
+    ```
 
-Add PATH for cmake (cmake.exe)  
+* Add PATH for cmake (cmake.exe)  
 C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin
 
 ## Install Requirements
