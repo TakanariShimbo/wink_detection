@@ -23,10 +23,12 @@ C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\Commo
 pip install numpy Cython cmake onnxruntime
 pip install insightface
 pip install opencv-contrib-python
+pip install socket
 ```
 
 # How to use
 1. download insightface models and set at models
     link: https://drive.google.com/file/d/1pKIusApEfoHKDjeBTXYB3yOQ0EtTonNE/view?usp=sharing
-2. run main.py
+2. run test_UDP_com.exe
+3. run main.py
 ![img.png](readme/img.png)
