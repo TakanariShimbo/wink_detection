@@ -9,6 +9,7 @@ import mediapipe as mp
 
 from udp_client import Udp_client
 
+
 # for ignore numpy warning
 warnings.filterwarnings('ignore')
 
@@ -137,7 +138,7 @@ class Processor_InsightFace:
         if is_face_detected:
             face = faces[0]
 
-            # alignmert
+            # alignment
             aligner.get(img, face)
             landmark_2d_68 = face.landmark_3d_68[:, 0:2]
 
