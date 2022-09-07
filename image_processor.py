@@ -36,8 +36,10 @@ CORRESPONDENCE_LIST_68_468 = [162,234,93,58,172,136,149,148,152,377,378,365,397,
 
 # classes
 class ImageProcessor_Mediapipe:
-    def __init__(self):
+    def __init__(self, wink_EAR_threshold):
         self.face_mesh = None
+        self.wink_EAR_threshold = wink_EAR_threshold
+
 
     def prepare(self):
         mp_face_mesh = mp.solutions.face_mesh
@@ -50,6 +52,7 @@ class ImageProcessor_Mediapipe:
 
     def run(self, img_bgr):
         face_mesh = self.face_mesh
+        wink_EAR_threshold = self.wink_EAR_threshold
 
         # detection, alignment
         img_rbg = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
@@ -68,7 +71,7 @@ class ImageProcessor_Mediapipe:
             landmark_2d_68 = np.array(landmark_2d_68)
 
             # check
-            is_wink_list, EAR_list = check_wink(landmark_2d_68, LANDMARK_PARTS_DICT)
+            is_wink_list, EAR_list = check_wink(landmark_2d_68, wink_EAR_threshold, LANDMARK_PARTS_DICT)
 
             # draw
             draw_landmark_2d_68(img_bgr, landmark_2d_68, LANDMARK_PARTS_DICT)
@@ -81,9 +84,10 @@ class ImageProcessor_Mediapipe:
 
 
 class ImageProcessor_InsightFace:
-    def __init__(self):
+    def __init__(self, wink_EAR_threshold):
         self.detector = None
         self.aligner = None
+        self.wink_EAR_threshold = wink_EAR_threshold
 
     def prepare(self):
         # prepare detector, aligner
@@ -98,6 +102,7 @@ class ImageProcessor_InsightFace:
     def run(self, img_bgr):
         detector = self.detector
         aligner = self.aligner
+        wink_EAR_threshold = self.wink_EAR_threshold
 
         # detection
         bboxes, kpss = detector.detect(img_bgr)
@@ -119,7 +124,7 @@ class ImageProcessor_InsightFace:
             landmark_2d_68 = face.landmark_3d_68[:, 0:2]
 
             # check
-            is_wink_list, EAR_list = check_wink(landmark_2d_68, LANDMARK_PARTS_DICT)
+            is_wink_list, EAR_list = check_wink(landmark_2d_68, wink_EAR_threshold, LANDMARK_PARTS_DICT)
 
             # draw
             draw_landmark_2d_68(img_bgr, landmark_2d_68, LANDMARK_PARTS_DICT)

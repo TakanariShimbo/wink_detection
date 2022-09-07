@@ -47,15 +47,16 @@ def make_fig(plt_data_dict):
     fig, ax = plt.subplots()
 
     # draw line
-    ax.plot(plt_data_dict["time"], plt_data_dict["left_EAR"], 'b,-')
-    ax.plot(plt_data_dict["time"], plt_data_dict["right_EAR"], 'r,-')
+    ax.plot(plt_data_dict["time"], plt_data_dict["left_EAR"], color='blue', linestyle='solid')
+    ax.plot(plt_data_dict["time"], plt_data_dict["right_EAR"], color='red', linestyle='solid')
+    ax.axhline(plt_data_dict['wink_EAR_threshold'], color='gray', linestyle='dashed')
 
     # draw dot
     t = plt_data_dict["time"][-1]
     left_EAR = plt_data_dict["left_EAR"][-1]
     right_EAR = plt_data_dict["right_EAR"][-1]
-    ax.scatter([t], [left_EAR], c='b')
-    ax.scatter([t], [right_EAR], c='r')
+    ax.scatter([t], [left_EAR], color='blue')
+    ax.scatter([t], [right_EAR], color='red')
 
     # set lim
     shift = 0.5

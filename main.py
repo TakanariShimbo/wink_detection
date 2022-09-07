@@ -14,8 +14,9 @@ warnings.filterwarnings('ignore')
 
 if __name__ == '__main__':
     # prepare processor
-    processor = ImageProcessor_Mediapipe()
-    # processor = Processor_InsightFace()
+    wink_EAR_threshold = 15
+    processor = ImageProcessor_Mediapipe( wink_EAR_threshold )
+    # processor = Processor_InsightFace( wink_EAR_threshold )
     processor.prepare()
 
     # prepare udp_client
@@ -29,7 +30,8 @@ if __name__ == '__main__':
     plt_data_dict = {
         "time": [],
         "left_EAR":[],
-        "right_EAR":[]
+        "right_EAR":[],
+        "wink_EAR_threshold": wink_EAR_threshold
     }
     while True:
         cnt += 1
@@ -55,10 +57,10 @@ if __name__ == '__main__':
         plt_data_dict["left_EAR"].append(EAR_list[0])
         plt_data_dict["right_EAR"].append(EAR_list[1])
         if cnt > 100:
-            for data_list in plt_data_dict.values():
-                data_list.pop(0)
+            for data in plt_data_dict.values():
+                if data.__class__.__name__ == 'list':
+                    data.pop(0)
         img_fig_bgr = make_fig( plt_data_dict )
-
 
         # show
         cv2.imshow('wink_detection', img)

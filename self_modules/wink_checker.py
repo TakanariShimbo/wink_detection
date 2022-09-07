@@ -1,9 +1,5 @@
 import numpy as np
 
-
-# set wink threshold (EAR[%])
-WINK_THRESHOLD = 15
-
 # functions
 def estimate_EAR(eye_landmark):
     p = eye_landmark
@@ -12,18 +8,18 @@ def estimate_EAR(eye_landmark):
     percent_EAR = np.round(vertical_elements/horizontal_elements*100, 1)
     return percent_EAR
 
-def check_wink( landmark_2d_68, LANDMARK_PARTS_DICT ):
+def check_wink( landmark_2d_68, wink_threshold, LANDMARK_PARTS_DICT ):
     # check wink
     start, end = LANDMARK_PARTS_DICT["Left Eye"]
     left_EAR = estimate_EAR(landmark_2d_68[start:end + 1])
-    if left_EAR <= WINK_THRESHOLD:
+    if left_EAR <= wink_threshold:
         is_left_wink = True
     else:
         is_left_wink = False
 
     start, end = LANDMARK_PARTS_DICT["Right Eye"]
     right_EAR = estimate_EAR(landmark_2d_68[start:end + 1])
-    if right_EAR <= WINK_THRESHOLD:
+    if right_EAR <= wink_threshold:
         is_right_wink = True
     else:
         is_right_wink = False
