@@ -56,8 +56,6 @@ class Processor_Mediapipe:
         results = face_mesh.process(img_rbg)
 
         is_face_detected = True if results.multi_face_landmarks != None else False
-        is_left_wink = False
-        is_right_wink = False
         if is_face_detected:
             # convert landmark 468 to 68
             landmark_2d_68 = []
@@ -74,6 +72,10 @@ class Processor_Mediapipe:
 
             # draw
             draw_landmark_2d_68(img_bgr, landmark_2d_68, LANDMARK_PARTS_DICT)
+
+        else:
+            is_left_wink = False
+            is_right_wink = False
 
         return is_face_detected, is_left_wink, is_right_wink
 
@@ -109,8 +111,6 @@ class Processor_InsightFace:
             faces.append(face)
 
         is_face_detected = True if len(faces) != 0 else False
-        is_left_wink = False
-        is_right_wink = False
         if is_face_detected:
             face = faces[0]
 
@@ -123,5 +123,8 @@ class Processor_InsightFace:
 
             # draw
             draw_landmark_2d_68(img_bgr, landmark_2d_68, LANDMARK_PARTS_DICT)
+        else:
+            is_left_wink = False
+            is_right_wink = False
 
         return is_face_detected, is_left_wink, is_right_wink
