@@ -2,8 +2,10 @@ import warnings
 
 import cv2
 import numpy as np
+
 from insightface.model_zoo import get_model
 from insightface.app.common import Face
+import mediapipe as mp
 
 from udp_client import Udp_client
 
@@ -11,7 +13,12 @@ from udp_client import Udp_client
 warnings.filterwarnings('ignore')
 
 # set wink threshold (EAR[%])
-WINK_THRESHOLD = 25.5
+WINK_THRESHOLD = 20
+
+# set
+CORRESPONDENCE_LIST_68_468 = [162,234,93,58,172,136,149,148,152,377,378,365,397,288,323,454,389,71,63,105,66,107,336,
+                  296,334,293,301,168,197,5,4,75,97,2,326,305,33,160,158,133,153,144,362,385,387,263,373,
+                  380,61,39,37,0,267,269,291,405,314,17,84,181,78,82,13,312,308,317,14,87]
 
 # set landmark part dict
 LANDMARK_PARTS_DICT = {
@@ -73,9 +80,28 @@ def estimate_EAR(eye_landmark):
     percent_EAR = np.round(vertical_elements/horizontal_elements*100, 1)
     return percent_EAR
 
+def check_wink( landmark_2d_68 ):
+    # check wink
+    start, end = LANDMARK_PARTS_DICT["Left Eye"]
+    left_EAR = estimate_EAR(landmark_2d_68[start:end + 1])
+    if left_EAR <= WINK_THRESHOLD:
+        is_left_wink = True
+    else:
+        is_left_wink = False
+
+    start, end = LANDMARK_PARTS_DICT["Right Eye"]
+    right_EAR = estimate_EAR(landmark_2d_68[start:end + 1])
+    if right_EAR <= WINK_THRESHOLD:
+        is_right_wink = True
+    else:
+        is_right_wink = False
+
+    print(f"L:{left_EAR}, R:{left_EAR}")
+    return is_left_wink, is_right_wink
+
 
 # class
-class Processor:
+class Processor_InsightFace:
     def __init__(self):
         self.detector = None
         self.aligner = None
@@ -115,18 +141,8 @@ class Processor:
             aligner.get(img, face)
             landmark_2d_68 = face.landmark_3d_68[:, 0:2]
 
-            # check wink
-            start, end = LANDMARK_PARTS_DICT["Left Eye"]
-            left_EAR = estimate_EAR( landmark_2d_68[start:end + 1] )
-            if left_EAR <= WINK_THRESHOLD:
-                is_left_wink = True
-
-            start, end = LANDMARK_PARTS_DICT["Right Eye"]
-            right_EAR = estimate_EAR( landmark_2d_68[start:end + 1])
-            if right_EAR <= WINK_THRESHOLD:
-                is_right_wink = True
-
-            print(f"L:{left_EAR}, R:{left_EAR}")
+            # check
+            is_left_wink, is_right_wink = check_wink(landmark_2d_68)
 
             # draw
             draw_landmark_2d_68(img, landmark_2d_68)
@@ -134,11 +150,54 @@ class Processor:
         return is_face_detected, is_left_wink, is_right_wink
 
 
+class Processor_Mediapipe:
+    def __init__(self):
+        self.detector = None
+        self.aligner = None
+
+    def prepare(self):
+        mp_face_mesh = mp.solutions.face_mesh
+        face_mesh = mp_face_mesh.FaceMesh(max_num_faces=1,
+                                          refine_landmarks=True,
+                                          min_detection_confidence=0.5,
+                                          min_tracking_confidence=0.5)
+
+        self.face_mesh = face_mesh
+
+    def run(self, img):
+        face_mesh = self.face_mesh
+
+        # detection, alignment
+        img_rbg = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        results = face_mesh.process(img_rbg)
+
+        is_face_detected = True if results.multi_face_landmarks != None else False
+        is_left_wink = False
+        is_right_wink = False
+        if is_face_detected:
+            # convert landmark 468 to 68
+            landmark_2d_68 = []
+            landmark_2d_468 = results.multi_face_landmarks[0]
+            height, width = img.shape[:2]
+            for index in CORRESPONDENCE_LIST_68_468:
+                x = int(landmark_2d_468.landmark[index].x * width)
+                y = int(landmark_2d_468.landmark[index].y * height)
+                landmark_2d_68.append([x, y])
+            landmark_2d_68 = np.array(landmark_2d_68)
+
+            # check
+            is_left_wink, is_right_wink = check_wink(landmark_2d_68)
+
+            # draw
+            draw_landmark_2d_68(img, landmark_2d_68)
+
+        return is_face_detected, is_left_wink, is_right_wink
 
 
 if __name__ == '__main__':
     # prepare processor
-    processor = Processor()
+    processor = Processor_Mediapipe()
+    # processor = Processor_InsightFace()
     processor.prepare()
 
     # prepare udp_client
