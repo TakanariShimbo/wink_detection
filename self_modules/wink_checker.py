@@ -2,7 +2,7 @@ import numpy as np
 
 
 # set wink threshold (EAR[%])
-WINK_THRESHOLD = 20
+WINK_THRESHOLD = 15
 
 # functions
 def estimate_EAR(eye_landmark):
