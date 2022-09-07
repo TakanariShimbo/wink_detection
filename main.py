@@ -5,12 +5,13 @@ import numpy as np
 from insightface.model_zoo import get_model
 from insightface.app.common import Face
 
+from udp_client import Udp_client
 
 # for ignore numpy warning
 warnings.filterwarnings('ignore')
 
 # set wink threshold (EAR[%])
-WINK_THRESHOLD = 23.0
+WINK_THRESHOLD = 25.5
 
 # set landmark part dict
 LANDMARK_PARTS_DICT = {
@@ -104,7 +105,10 @@ class Processor:
             face = Face(bbox=bbox, kps=kps, det_score=det_score)
             faces.append(face)
 
-        if len(faces) != 0:
+        is_face_detected = True if len(faces) != 0 else False
+        is_left_wink = False
+        is_right_wink = False
+        if is_face_detected:
             face = faces[0]
 
             # alignmert
@@ -114,18 +118,20 @@ class Processor:
             # check wink
             start, end = LANDMARK_PARTS_DICT["Left Eye"]
             left_EAR = estimate_EAR( landmark_2d_68[start:end + 1] )
-            left_wink = True if left_EAR <= WINK_THRESHOLD else False
+            if left_EAR <= WINK_THRESHOLD:
+                is_left_wink = True
 
             start, end = LANDMARK_PARTS_DICT["Right Eye"]
             right_EAR = estimate_EAR( landmark_2d_68[start:end + 1])
-            right_wink = True if right_EAR <= WINK_THRESHOLD else False
+            if right_EAR <= WINK_THRESHOLD:
+                is_right_wink = True
 
             print(f"L:{left_EAR}, R:{left_EAR}")
 
             # draw
             draw_landmark_2d_68(img, landmark_2d_68)
 
-            return left_wink, right_wink
+        return is_face_detected, is_left_wink, is_right_wink
 
 
 
@@ -134,6 +140,9 @@ if __name__ == '__main__':
     # prepare processor
     processor = Processor()
     processor.prepare()
+
+    # prepare udp_client
+    udp_client = Udp_client()
 
     # start capture
     cap = cv2.VideoCapture(0)
@@ -146,7 +155,12 @@ if __name__ == '__main__':
         img = cv2.flip(img, 1)
 
         # detection, alignment, draw
-        processor.run(img)
+        is_face_detected, is_left_wink, is_right_wink = processor.run(img)
+
+        # pass info to unity
+        udp_client.send_msg_face_detected(is_face_detected)
+        udp_client.send_msg_left_wink(is_left_wink)
+        udp_client.send_msg_right_wink(is_right_wink)
 
         # show
         cv2.imshow('wink_detection', img)
