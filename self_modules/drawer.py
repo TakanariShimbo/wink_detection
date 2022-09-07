@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 # functions
@@ -40,3 +41,31 @@ def draw_landmark_2d_68(img, landmark_2d_68, LANDMARK_PARTS_DICT):
     # draw each parts
     for key, (start, end) in LANDMARK_PARTS_DICT.items():
         draw_a_part_of_landmark_2d_68(img, landmark_2d_68, start, end, color_dict[key], isClosed_dict[key])
+
+def make_fig(plt_data_dict):
+    # make fig
+    fig, ax = plt.subplots()
+
+    # draw line
+    ax.plot(plt_data_dict["time"], plt_data_dict["left_EAR"], 'b,-')
+    ax.plot(plt_data_dict["time"], plt_data_dict["right_EAR"], 'r,-')
+
+    # draw dot
+    t = plt_data_dict["time"][-1]
+    left_EAR = plt_data_dict["left_EAR"][-1]
+    right_EAR = plt_data_dict["right_EAR"][-1]
+    ax.scatter([t], [left_EAR], c='b')
+    ax.scatter([t], [right_EAR], c='r')
+
+    # set lim
+    shift = 0.5
+    ax.set_xlim([t + shift - 5.0, t + shift])
+    ax.set_ylim([0, 40])
+
+    # convert fig -> img
+    fig.canvas.draw()
+    plt.close()
+    img_fig_rgba = np.array(fig.canvas.renderer.buffer_rgba())
+    img_fig_bgr = cv2.cvtColor(img_fig_rgba, cv2.COLOR_RGBA2BGR)
+
+    return img_fig_bgr
