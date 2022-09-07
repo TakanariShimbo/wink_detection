@@ -181,8 +181,8 @@ class Processor_Mediapipe:
             landmark_2d_468 = results.multi_face_landmarks[0]
             height, width = img.shape[:2]
             for index in CORRESPONDENCE_LIST_68_468:
-                x = int(landmark_2d_468.landmark[index].x * width)
-                y = int(landmark_2d_468.landmark[index].y * height)
+                x = landmark_2d_468.landmark[index].x * width
+                y = landmark_2d_468.landmark[index].y * height
                 landmark_2d_68.append([x, y])
             landmark_2d_68 = np.array(landmark_2d_68)
 
