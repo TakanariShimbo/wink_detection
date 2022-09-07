@@ -24,6 +24,7 @@ pip install numpy Cython cmake onnxruntime
 pip install insightface
 pip install opencv-contrib-python
 pip install socket
+pip install mediapipe
 ```
 
 # How to use
