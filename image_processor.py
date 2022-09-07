@@ -35,7 +35,7 @@ CORRESPONDENCE_LIST_68_468 = [162,234,93,58,172,136,149,148,152,377,378,365,397,
 
 
 # classes
-class Processor_Mediapipe:
+class ImageProcessor_Mediapipe:
     def __init__(self):
         self.face_mesh = None
 
@@ -68,19 +68,19 @@ class Processor_Mediapipe:
             landmark_2d_68 = np.array(landmark_2d_68)
 
             # check
-            is_left_wink, is_right_wink = check_wink(landmark_2d_68, LANDMARK_PARTS_DICT)
+            is_wink_list, EAR_list = check_wink(landmark_2d_68, LANDMARK_PARTS_DICT)
 
             # draw
             draw_landmark_2d_68(img_bgr, landmark_2d_68, LANDMARK_PARTS_DICT)
 
         else:
-            is_left_wink = False
-            is_right_wink = False
+            is_wink_list = [False, False]
+            EAR_list = [np.nan, np.nan]
 
-        return is_face_detected, is_left_wink, is_right_wink
+        return is_face_detected, is_wink_list, EAR_list
 
 
-class Processor_InsightFace:
+class ImageProcessor_InsightFace:
     def __init__(self):
         self.detector = None
         self.aligner = None
@@ -119,12 +119,12 @@ class Processor_InsightFace:
             landmark_2d_68 = face.landmark_3d_68[:, 0:2]
 
             # check
-            is_left_wink, is_right_wink = check_wink(landmark_2d_68, LANDMARK_PARTS_DICT)
+            is_wink_list, EAR_list = check_wink(landmark_2d_68, LANDMARK_PARTS_DICT)
 
             # draw
             draw_landmark_2d_68(img_bgr, landmark_2d_68, LANDMARK_PARTS_DICT)
         else:
-            is_left_wink = False
-            is_right_wink = False
+            is_wink_list = [False, False]
+            EAR_list = [np.nan, np.nan]
 
-        return is_face_detected, is_left_wink, is_right_wink
+        return is_face_detected, is_wink_list, EAR_list

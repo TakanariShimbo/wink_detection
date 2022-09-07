@@ -28,5 +28,6 @@ def check_wink( landmark_2d_68, LANDMARK_PARTS_DICT ):
     else:
         is_right_wink = False
 
-    print(f"L:{left_EAR}, R:{left_EAR}")
-    return is_left_wink, is_right_wink
+    is_wink_list = [is_left_wink, is_right_wink]
+    EAR_list = [left_EAR, right_EAR]
+    return is_wink_list, EAR_list

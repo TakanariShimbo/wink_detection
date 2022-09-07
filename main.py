@@ -2,7 +2,7 @@ import warnings
 
 import cv2
 
-from processor import Processor_Mediapipe
+from image_processor import ImageProcessor_Mediapipe
 from self_modules.udp_client import Udp_client
 
 
@@ -12,7 +12,7 @@ warnings.filterwarnings('ignore')
 
 if __name__ == '__main__':
     # prepare processor
-    processor = Processor_Mediapipe()
+    processor = ImageProcessor_Mediapipe()
     # processor = Processor_InsightFace()
     processor.prepare()
 
@@ -30,12 +30,13 @@ if __name__ == '__main__':
         img = cv2.flip(img, 1)
 
         # detection, alignment, draw
-        is_face_detected, is_left_wink, is_right_wink = processor.run(img)
+        is_face_detected, is_wink_list, EAR_list = processor.run(img)
+        print(f"L:{EAR_list[0]}, R:{EAR_list[1]}")
 
         # pass info to unity
         udp_client.send_msg_face_detected(is_face_detected)
-        udp_client.send_msg_left_wink(is_left_wink)
-        udp_client.send_msg_right_wink(is_right_wink)
+        udp_client.send_msg_left_wink(is_wink_list[0])
+        udp_client.send_msg_right_wink(is_wink_list[1])
 
         # show
         cv2.imshow('wink_detection', img)
