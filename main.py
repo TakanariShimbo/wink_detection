@@ -14,7 +14,7 @@ warnings.filterwarnings('ignore')
 
 if __name__ == '__main__':
     # setting
-    wink_EAR_threshold = 15
+    wink_EAR_threshold = 12.5
     is_show_fig = True
 
     # prepare processor
@@ -31,10 +31,15 @@ if __name__ == '__main__':
     cnt = 0
     t0 = time()
     plt_data_dict = {
-        "time": [],
-        "left_EAR":[],
-        "right_EAR":[],
-        "wink_EAR_threshold": wink_EAR_threshold
+        "list": {
+            "time": [],
+            "left_EAR": [],
+            "right_EAR": [],
+
+        },
+        "value": {
+            "wink_EAR_threshold": wink_EAR_threshold
+        },
     }
     while True:
         cnt += 1
@@ -56,21 +61,20 @@ if __name__ == '__main__':
         udp_client.send_msg_right_wink(is_wink_list[1])
 
         # show
-        cv2.imshow('wink_detection', img_bgr)
+        cv2.imshow('IMG: with FACE ALIGNMENT', img_bgr)
 
         if is_show_fig:
             # make fig images
-            plt_data_dict["time"].append(t)
-            plt_data_dict["left_EAR"].append(EAR_list[0])
-            plt_data_dict["right_EAR"].append(EAR_list[1])
+            plt_data_dict["list"]["time"].append(t)
+            plt_data_dict["list"]["left_EAR"].append(EAR_list[0])
+            plt_data_dict["list"]["right_EAR"].append(EAR_list[1])
             if cnt > 100:
-                for data in plt_data_dict.values():
-                    if data.__class__.__name__ == 'list':
-                        data.pop(0)
+                for list_data in plt_data_dict["list"].values():
+                    list_data.pop(0)
             fig_bgr = make_fig(plt_data_dict)
 
             # show
-            cv2.imshow('EAR_fig', fig_bgr)
+            cv2.imshow('FIG: TIME vs EAR', fig_bgr)
 
         if cv2.waitKey(1) != -1:
             break

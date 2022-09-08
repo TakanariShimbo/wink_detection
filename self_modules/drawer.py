@@ -47,14 +47,20 @@ def make_fig(plt_data_dict):
     fig, ax = plt.subplots()
 
     # draw line
-    ax.plot(plt_data_dict["time"], plt_data_dict["left_EAR"], color='blue', linestyle='solid')
-    ax.plot(plt_data_dict["time"], plt_data_dict["right_EAR"], color='red', linestyle='solid')
-    ax.axhline(plt_data_dict['wink_EAR_threshold'], color='gray', linestyle='dashed')
+    t_list = plt_data_dict["list"]["time"]
+    left_EAR_list = plt_data_dict["list"]["left_EAR"]
+    right_EAR_list = plt_data_dict["list"]["right_EAR"]
+
+    ax.plot(t_list, left_EAR_list, color='blue', linestyle='solid')
+    ax.plot(t_list, right_EAR_list, color='red', linestyle='solid')
+    wink_EAR_threshold = plt_data_dict["value"]['wink_EAR_threshold']
+    ax.axhline(wink_EAR_threshold, color='gray', linestyle='dashed')
 
     # draw dot
-    t = plt_data_dict["time"][-1]
-    left_EAR = plt_data_dict["left_EAR"][-1]
-    right_EAR = plt_data_dict["right_EAR"][-1]
+    t = plt_data_dict["list"]["time"][-1]
+    left_EAR = plt_data_dict["list"]["left_EAR"][-1]
+    right_EAR = plt_data_dict["list"]["right_EAR"][-1]
+
     ax.scatter([t], [left_EAR], color='blue')
     ax.scatter([t], [right_EAR], color='red')
 
